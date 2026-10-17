@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { getSalesMetrics } from '@/app/actions';
-import { DollarSign, ShoppingCart, TrendingUp, Zap, BarChart3, Clock } from 'lucide-react';
+import { DollarSign, ShoppingCart, TrendingUp, Zap, BarChart3, LayoutDashboard, Kanban } from 'lucide-react';
 
 interface MetricData {
   totalSalesCount: number;
@@ -45,17 +46,37 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Encabezado */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* Encabezado con Navegación y SLA */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">PulseMarket Analytics</h1>
             <p className="text-gray-500 text-sm mt-1">Dashboard de Analítica e-Commerce en Tiempo Real</p>
           </div>
-          
-          {/* Métrico SLA (<400ms) */}
-          <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-lg text-emerald-700 text-sm font-semibold">
-            <Zap className="h-4 w-4" />
-            <span>Respuesta DB: {data.queryDuration}ms (SLA &lt; 400ms)</span>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Métrico SLA (<400ms) */}
+            <div className="flex items-center justify-center gap-2 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-lg text-emerald-700 text-sm font-semibold">
+              <Zap className="h-4 w-4" />
+              <span>Respuesta DB: {data.queryDuration}ms (SLA &lt; 400ms)</span>
+            </div>
+
+            {/* Menú de Navegación */}
+            <nav className="flex gap-2">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium text-sm shadow hover:bg-indigo-700 transition"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                <span>Métricas</span>
+              </Link>
+              <Link
+                href="/dashboard/kanban"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium text-sm transition"
+              >
+                <Kanban className="h-4 w-4" />
+                <span>Kanban</span>
+              </Link>
+            </nav>
           </div>
         </div>
 

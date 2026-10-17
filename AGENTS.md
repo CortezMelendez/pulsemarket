@@ -1,9 +1,15 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# PulseMarket - Multi-Agent Architecture & Vibe Coding Guidelines
 
-## This is NOT the Next.js you know
+## Project Overview
+PulseMarket is a high-performance e-commerce analytics dashboard built with Next.js 14 App Router, TypeScript, Tailwind CSS, Prisma ORM, Supabase PostgreSQL, and Vitest.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+## AI Agent Roles & Collaboration
+- **Architect Agent:** Designed database schema (`schema.prisma`) with indexes and soft-delete pattern (`deletedAt`).
+- **Data Engineer Agent:** Built seed script (`prisma/seed.ts`) to inject 10,000+ relational records ensuring <400ms query performance.
+- **Frontend / UX Agent:** Created responsive dashboard and Drag & Drop Kanban board using `@hello-pangea/dnd`.
+- **QA & Testing Agent:** Implemented Vitest suite verifying business logic, financial metrics, and schema constraints.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+## SLA & Performance Rules
+- All queries must leverage Prisma indexes (`createdAt`, `status`, `userId`).
+- Server Actions use `unstable_cache` for sub-400ms response time SLAs.
+- Soft delete pattern strictly enforced (`deletedAt != null` filtering).

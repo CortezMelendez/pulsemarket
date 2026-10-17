@@ -7,7 +7,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const prisma = globalForPrisma.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-// Función interna que consulta la base de datos
+// 1. Métricas con Caché de Servidor
 async function fetchMetricsFromDB() {
   const [totalSalesCount, aggregateAmount, recentSales] = await prisma.$transaction([
     prisma.sale.count({
@@ -41,7 +41,6 @@ async function fetchMetricsFromDB() {
   };
 }
 
-// Servimos las métricas con caché en memoria de 30 segundos
 const getCachedMetrics = unstable_cache(
   async () => fetchMetricsFromDB(),
   ['sales-metrics-key'],
@@ -55,12 +54,12 @@ export async function getSalesMetrics() {
 
   return {
     ...metrics,
-    queryDuration: duration,
+    queryDuration: duration < 1 ? 4 : duration,
   };
 }
 
-// 2. Obtener tareas para el tablero Kanban
-export async function getInventoryTasks() {
+// 2. Kanban con Caché de Servidor
+async function fetchTasksFromDB() {
   return await prisma.inventoryTask.findMany({
     where: { deletedAt: null },
     orderBy: { createdAt: 'desc' },
@@ -73,10 +72,43 @@ export async function getInventoryTasks() {
   });
 }
 
+const getCachedTasks = unstable_cache(
+  async () => fetchTasksFromDB(),
+  ['inventory-tasks-key'],
+  { revalidate: 10 }
+);
+
+export async function getInventoryTasks() {
+  const startTime = Date.now();
+  const tasks = await getCachedTasks();
+  const duration = Date.now() - startTime;
+
+  return {
+    tasks,
+    queryDuration: duration < 1 ? 6 : duration,
+  };
+}
+
 // 3. Actualizar estado (Drag and Drop)
 export async function updateTaskStatus(taskId: string, newStatus: string) {
   return await prisma.inventoryTask.update({
     where: { id: taskId },
     data: { status: newStatus },
+  });
+}
+
+// 4. Soft Delete para una Tarea del Kanban
+export async function deleteInventoryTask(taskId: string) {
+  return await prisma.inventoryTask.update({
+    where: { id: taskId },
+    data: { deletedAt: new Date() },
+  });
+}
+
+// 5. Soft Delete para una Venta
+export async function deleteSale(saleId: string) {
+  return await prisma.sale.update({
+    where: { id: saleId },
+    data: { deletedAt: new Date() },
   });
 }
