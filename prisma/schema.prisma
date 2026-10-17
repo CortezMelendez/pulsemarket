@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  role      String    @default("CUSTOMER")
+  createdAt DateTime  @default(now())
+  deletedAt DateTime? 
+  sales     Sale[]
+
+  @@index([email])
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  category    String
+  price       Float
+  stock       Int
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime? 
+  sales       Sale[]
+
+  @@index([category])
+  @@index([createdAt])
+}
+
+model Sale {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  productId String
+  product   Product   @relation(fields: [productId], references: [id])
+  amount    Float
+  quantity  Int
+  createdAt DateTime  @default(now())
+  deletedAt DateTime? 
+
+  @@index([userId])
+  @@index([productId])
+  @@index([createdAt])
+}
+
+model InventoryTask {
+  id        String    @id @default(uuid())
+  title     String
+  status    String    @default("PENDING")
+  priority  String    @default("MEDIUM")
+  createdAt DateTime  @default(now())
+  deletedAt DateTime? 
+
+  @@index([status])
+}
