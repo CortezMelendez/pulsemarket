@@ -7,7 +7,6 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma skills sync || exit 0",
     "test": "vitest run"
   },
   "prisma": {
@@ -16,6 +15,7 @@
   "dependencies": {
     "@faker-js/faker": "^10.6.0",
     "@hello-pangea/dnd": "^18.0.1",
+    "@prisma/client": "^5.22.0",
     "clsx": "^2.1.1",
     "lucide-react": "^1.59.0",
     "next": "16.4.2",
@@ -25,7 +25,6 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
-    "@prisma/client": "^5.22.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20.19.43",
     "@types/react": "^19",
